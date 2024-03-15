@@ -22,6 +22,7 @@ class Client:
         self.vehicles = None
         self.walkers = None
 
+        # 将carla蓝图库中的名字 映射到 nuscenes中的语义
         get_category = lambda bp: "vehicle.car" if bp.id.split(".")[0] == "vehicle" else "human.pedestrian.adult" if bp.id.split(".")[0] == "walker" else None
         self.category_dict = {bp.id: get_category(bp) for bp in self.world.get_blueprint_library()}
         get_attribute = lambda bp: ["vehicle.moving"] if bp.id.split(".")[0] == "vehicle" else ["pedestrian.moving"] if bp.id.split(".")[0] == "walker" else None
@@ -103,6 +104,7 @@ class Client:
         for walker in self.walkers:
             walker.start()
 
+        # 生成sensor
         self.sensors = [Sensor(world=self.world, attach_to=self.ego_vehicle.get_actor(), **sensor_config) for sensor_config in scene_config["calibrated_sensors"]["sensors"]]
         sensors_batch = [SpawnActor(sensor.blueprint,sensor.transform,sensor.attach_to) for sensor in self.sensors]
         for i,response in enumerate(self.client.apply_batch_sync(sensors_batch)):
@@ -351,5 +353,3 @@ class Client:
             "dust_storm":clamp(random.gauss(0,30))
         }
         return weather_param
-
-    

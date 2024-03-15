@@ -2,6 +2,10 @@ dataset:
   root: "./dataset"
   version: "v1.14"
 
+lidarseg:
+  root: "./lidarseg"
+  version: "v1.14"
+
 client:
   host: 127.0.0.1
   port: 2000
@@ -12,6 +16,9 @@ sensors:
 
 categories:
   !include ./configs/categories.yaml
+
+lidarseg_categories:
+  !include ./configs/lidarseg_categories.yaml
 
 attributes:
   !include ./configs/attributes.yaml

@@ -169,7 +169,7 @@ sensors:
   #-----------lidar----------
   - 
     name: 'LIDAR_TOP'
-    bp_name: 'sensor.lidar.ray_cast'
+    bp_name: 'sensor.lidar.ray_cast_semantic'
     location: 
       x: 0
       y: 0
@@ -179,7 +179,7 @@ sensors:
       pitch: 0
       roll: 0
     options: 
-      'channels': '32'
+      'channels': '128'
       'points_per_second': '1400000'
       'range': '80'
       'upper_fov': '10'

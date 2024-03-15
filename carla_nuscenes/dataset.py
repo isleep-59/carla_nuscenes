@@ -20,9 +20,9 @@ def save_sensor_data(data,path):
         save_image(data,path)
     elif isinstance(data,carla.RadarMeasurement):
         save_radar_data(data,path)
-    elif isinstance(data,carla.LidarMeasurement):
-        save_lidar_data(data,path)   
-
+    elif isinstance(data,carla.SemanticLidarMeasurement):   # 语义雷达替换
+        # save_lidar_data(data,path)
+        data.save_to_disk(path)
 def mkdir(path):
     if not os.path.exists(path):
         os.mkdir(path)
@@ -112,8 +112,8 @@ class Dataset:
     def update_sensor(self,channel,modality,replace=True):
         sensor_item = {}
         sensor_item["token"] = generate_token("sensor",channel)
-        sensor_item["channel"] = channel
-        sensor_item["modality"] = modality
+        sensor_item["channel"] = channel        # 类型以及位置
+        sensor_item["modality"] = modality      # 类型：雷达或相机
         if self.get_item("sensor",sensor_item["token"]) is None:
             self.data["sensor"].append(sensor_item)
         elif replace:
@@ -187,6 +187,8 @@ class Dataset:
         elif replace:
             self.data["sample"].remove(self.get_item("sample",sample_item["token"]))
             self.data["sample"].append(sample_item)
+
+
         return sample_item["token"]
 
     def update_sample_data(self,prev,calibrated_sensor_token,sample_token,ego_pose_token,is_key_frame,sample_data,height,width,replace=True):
@@ -202,7 +204,7 @@ class Dataset:
         elif sensor["modality"] == "radar":
             sample_data_item["fileformat"] = "pcd"
         elif sensor["modality"] == "lidar":
-            sample_data_item["fileformat"] = "pcd.bin"
+            sample_data_item["fileformat"] = "ply"
         sample_data_item["is_key_frame"] = is_key_frame
         sample_data_item["height"] = height
         sample_data_item["width"] = width
@@ -300,7 +302,7 @@ class Dataset:
         sample_annotation_item["next"] = ""
         sample_annotation_item["num_lidar_pts"] = num_lidar_pts
         sample_annotation_item["num_radar_pts"] = num_radar_pts
-        instance_item  = self.get_item("instance",instance_token)
+        instance_item = self.get_item("instance",instance_token)
         if prev == "":
             instance_item["first_annotation_token"] = sample_annotation_item["token"]
         else:
